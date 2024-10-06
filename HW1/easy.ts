@@ -6,7 +6,7 @@ export type MyPick<T, K extends keyof T> = {
 export type NOfArray<ArrayObj extends any[], N extends number> =
     N extends keyof ArrayObj ? ArrayObj[N] : never;
 
-export type Unshift<ArrayType extends any[], Element> = [Element, ...ArrayType];
+export type Unshift<ArrayType extends any[], El> = [El, ...ArrayType];
 
 export type MyExclude<T, U> = T extends U ? never : T;
 

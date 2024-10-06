@@ -1,57 +1,66 @@
-//export type Camelize<ObjectType> = unknown;
 
-type CamelToSnakeCase<S extends string> = S extends `${infer Head}_${infer Tail}`
-    ? `${Head}${Capitalize<CamelToSnakeCase<Tail>>}`
+type ConvertToCamel<S extends string> = S extends `${infer Start}_${infer End}`
+    ? `${Start}${Capitalize<ConvertToCamel<End>>}`
     : S;
 
 export type Camelize<T> = T extends object
     ? {
-        [K in keyof T as CamelToSnakeCase<K & string>]: Camelize<T[K]>
+        [K in keyof T as ConvertToCamel<K & string>]: Camelize<T[K]>
     }
     : T;
 
 
+type DeepPick<T, Paths extends string> = Paths extends `${infer Start}.${infer RemainingPath}`
+    ? Start extends keyof T
+        ? { [K in Start]: DeepPick<T[Start], RemainingPath> }
+        : never
+    : Paths extends keyof T
+        ? { [K in Paths]: T[K] }
+        : never;
 
-type DeepPickHelper<T, K extends keyof T> = K extends string
-    ? T[K] extends object
-        ? { [P in K]: DeepPick<T[K], Extract<keyof T[K], string>> }
-        : { [P in K]: T[K] }
-    : never;
-
-export type DeepPick<T, Paths extends string> =
-    Paths extends `${infer Key}.${infer Rest}`
-    ? Key extends keyof T
-    ? DeepPickHelper<T, Key> & DeepPick<T[Key], Rest>
-    : never
-: Paths extends keyof T
-    ? { [K in Paths]: T[K] }
-    : never;
 
 
 // Примеры использования
 
 /* Camelize */
-interface SnakeCase {
-    person_name: string;
-    person_age: number;
-    person_details: {
-        first_name: string;
-        last_name: string;
+interface SnakeCaseTest {
+    first_name: string;
+    last_name: string;
+    person_address: {
+        street_name: string;
+        house_number: number;
     };
 }
 
-type CamelCaseExample = Camelize<SnakeCase>;
+type CamelCaseTest = Camelize<SnakeCaseTest>;
+
+const person: CamelCaseTest = {
+    firstName: "Maya",
+    lastName: "Ifraimova",
+    personAddress: {
+        streetName: "some street",
+        houseNumber: 10
+    }
+};
+
 
 /* DeepPick */
-interface Example {
-    person: {
+
+interface Person {
+    info: {
         name: string;
-        details: {
-            age: number;
-            address: string;
+        age: number;
+        address: {
+            street: string;
+            house: number;
         };
     };
-    isActive: boolean;
 }
 
-type PersonDetails = DeepPick<Example, 'user.details.address' | 'isActive'>;
+const person2: DeepPick<Person, 'info.name' | 'info.address.house'> = {
+    info: {
+        address: {
+            house: 10
+        }
+    }
+};

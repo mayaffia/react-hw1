@@ -11,9 +11,9 @@ export type DeepMutable<T> = {
 };
 
 export type ParseURLParams<S extends string> =
-    S extends `${infer _Prefix}:${infer Param}/${infer Rest}`
-    ? Param | ParseURLParams<Rest>
-    : S extends `${infer _Prefix}:${infer Param}`
+    S extends `${infer Prefix}:${infer Param}/${infer RemainingPath}`
+    ? Param | ParseURLParams<RemainingPath>
+    : S extends `${infer Prefix}:${infer Param}`
     ? Param
     : never;
 
@@ -71,7 +71,6 @@ const mutablePerson: MutablePerson = {
 
 mutablePerson.name = "Alice";
 mutablePerson.address.house = 20;
-
 
 
 /* ParseURLParams */
