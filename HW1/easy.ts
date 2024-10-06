@@ -16,7 +16,7 @@ export type MyExclude<T, U> = T extends U ? never : T;
 interface Person {
     name: string;
     age: number;
-    sex: number;
+    sex: string;
     weight: number;
 }
 
